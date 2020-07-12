@@ -3,6 +3,8 @@ import random
 
 from enum import Enum
 
+from constants import WHITE
+
 class Direction(Enum):
   LEFT = 1
   RIGHT = 2
@@ -11,7 +13,7 @@ class Direction(Enum):
   def get_random_direction(cls):
     direction = random.randint(cls.LEFT.value, cls.RIGHT.value)
 
-    return direction
+    return cls.LEFT if direction == 1 else cls.RIGHT
   
   @classmethod
   def get_opposite_direction(cls, direction):
@@ -21,18 +23,27 @@ class Direction(Enum):
     return cls.LEFT
 
 class Ball(pygame.sprite.Sprite):
-  BALL_COLOUR = (255, 255, 255)
+  BALL_COLOUR = WHITE
   BALL_SIZE = (25, 25)
   BALL_SPEED = 18
 
   def __init__(self, starting_center):
     super(Ball, self).__init__()
+    
+    self.starting_center = starting_center
     self.surf = pygame.Surface(Ball.BALL_SIZE)
+    
     self.surf.fill(Ball.BALL_COLOUR)
-    self.rect = self.surf.get_rect(center=starting_center)
+    self.set_initial_state()
+  
+  def reset_to_initial_state(self):
+    self.set_initial_state()
+  
+  def set_initial_state(self):
+    self.rect = self.surf.get_rect(center=self.starting_center)
     self.direction = Direction.get_random_direction()
     self.vertical_speed = 0
-  
+
   def switch_direction(self):
     self.direction = Direction.get_opposite_direction(self.direction)
 
